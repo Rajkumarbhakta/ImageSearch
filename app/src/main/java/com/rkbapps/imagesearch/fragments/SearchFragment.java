@@ -1,0 +1,202 @@
+package com.rkbapps.imagesearch.fragments;
+
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.appcompat.widget.SearchView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.search.SearchBar;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.rkbapps.imagesearch.ImagePreviewActivity;
+import com.rkbapps.imagesearch.R;
+import com.rkbapps.imagesearch.RecyclerTouchListener;
+import com.rkbapps.imagesearch.adapter.MyAdapter;
+import com.rkbapps.imagesearch.model.ImageModelClass;
+import com.rkbapps.imagesearch.model.Photo;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class SearchFragment extends Fragment {
+    ImageView imgSearch;
+    Button btnSearch;
+    EditText txtSearchText;
+    ConstraintLayout searchView;
+    String strSearchText;
+    private RecyclerView recyclerView;
+    private ImageModelClass img;
+    private ProgressBar progressBar;
+    private List<Photo> photoList = new ArrayList<>();
+    private MyAdapter adapter ;
+
+    private int page;
+    public SearchFragment() {
+        // Required empty public constructor
+    }
+
+    @SuppressLint("MissingInflatedId")
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view= inflater.inflate(R.layout.fragment_search, container, false);
+        imgSearch=view.findViewById(R.id.imgSearch);
+        btnSearch=view.findViewById(R.id.buttonSearch);
+        txtSearchText=view.findViewById(R.id.txtSearch);
+        searchView=view.findViewById(R.id.searchLayout);
+        searchView.setVisibility(View.GONE);
+        recyclerView=view.findViewById(R.id.recyclerView2);
+        progressBar=view.findViewById(R.id.progressBarSearch);
+
+        ExtendedFloatingActionButton ebSetting=view.findViewById(R.id.btnApplySetting2);
+        LinearLayoutCompat liner = view.findViewById(R.id.linerLayout2);
+        Button previous = view.findViewById(R.id.btnPreviousSearch);
+        Button next = view.findViewById(R.id.btnNextSearch);
+        liner.setVisibility(View.GONE);
+        page=1;
+        strSearchText="wallpaper";
+        loadImages(strSearchText,""+page);
+
+        imgSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imgSearch.setVisibility(View.GONE);
+                searchView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                strSearchText=txtSearchText.getText().toString().trim();
+                imgSearch.setVisibility(View.VISIBLE);
+                searchView.setVisibility(View.GONE);
+                if(strSearchText.equals("")){
+                    Toast.makeText(getContext(), "nothing", Toast.LENGTH_SHORT).show();
+                }else{
+                    page=1;
+                    loadImages(strSearchText,""+page);
+                }
+            }
+        });
+
+        ebSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ebSetting.setVisibility(View.GONE);
+                liner.setVisibility(View.VISIBLE);
+            }
+        });
+
+        previous.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(page>1){
+                    page --;
+                    loadImages(strSearchText,""+page);
+                    liner.setVisibility(View.GONE);
+                    ebSetting.setVisibility(View.VISIBLE);
+                }else {
+                    Toast.makeText(getContext(), "No previous page available", Toast.LENGTH_SHORT).show();
+                    liner.setVisibility(View.GONE);
+                    ebSetting.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(img.getNextPage() != null){
+                    page++;
+                    loadImages(strSearchText,""+page);
+                    liner.setVisibility(View.GONE);
+                    ebSetting.setVisibility(View.VISIBLE);
+                }else {
+                    Toast.makeText(getContext(), "No more result available", Toast.LENGTH_SHORT).show();
+                    liner.setVisibility(View.GONE);
+                    ebSetting.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+//        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+//            @Override
+//            public void onClick(View view, int position) {
+//                Intent i = new Intent(getContext(), ImagePreviewActivity.class);
+//                i.putExtra("link",photoList.get(position).getSrc().getOriginal());
+//                startActivity(i);
+//            }
+//
+//            @Override
+//            public void onLongClick(View view, int position) {
+//
+//            }
+//        }));
+
+
+
+        return view;
+    }
+
+
+    private void loadImages(String searchTxt,String page){
+        progressBar.setVisibility(View.VISIBLE);
+        photoList.clear();
+        String url = "https://api.pexels.com/v1/search/?page="+page+"&per_page=30&query="+searchTxt;
+        RequestQueue queue = Volley.newRequestQueue(requireContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = new Gson();
+                img= gson.fromJson(response, ImageModelClass.class);
+//                MyAdapter adapter = new MyAdapter(MainActivity.this,img.getPhotos());
+//                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//                recyclerView.setAdapter(adapter);
+                photoList=img.getPhotos();
+                adapter = new MyAdapter(getContext(),photoList);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), ""+error, Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(stringRequest);
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+}
