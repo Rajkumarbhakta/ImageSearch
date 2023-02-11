@@ -68,6 +68,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
                 holder.addToMyFav.setColorFilter(Color.RED);
                 holder.addToMyFav.setImageResource(R.drawable.heart_filled);
                 i.putExtra("isFav",true);
+            }else {
+                holder.addToMyFav.setImageResource(R.drawable.heart);
+                holder.addToMyFav.setColorFilter(Color.BLACK);
             }
             holder.addToMyFav.setOnClickListener(new View.OnClickListener() {
                 @Override
