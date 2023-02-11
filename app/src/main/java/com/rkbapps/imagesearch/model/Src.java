@@ -3,7 +3,9 @@ package com.rkbapps.imagesearch.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Src {
+import java.io.Serializable;
+
+public class Src implements Serializable {
 
     @SerializedName("original")
     @Expose
@@ -108,4 +110,17 @@ public class Src {
         this.tiny = tiny;
     }
 
+    @Override
+    public String toString() {
+        return "Src{" +
+                "original='" + original + '\'' +
+                ", large2x='" + large2x + '\'' +
+                ", large='" + large + '\'' +
+                ", medium='" + medium + '\'' +
+                ", small='" + small + '\'' +
+                ", portrait='" + portrait + '\'' +
+                ", landscape='" + landscape + '\'' +
+                ", tiny='" + tiny + '\'' +
+                '}';
+    }
 }

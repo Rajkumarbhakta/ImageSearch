@@ -181,9 +181,6 @@ public class SearchFragment extends Fragment {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = new Gson();
                 img= gson.fromJson(response, ImageModelClass.class);
-//                MyAdapter adapter = new MyAdapter(MainActivity.this,img.getPhotos());
-//                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-//                recyclerView.setAdapter(adapter);
                 photoList=img.getPhotos();
                 adapter = new MyAdapter(getContext(),photoList);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
