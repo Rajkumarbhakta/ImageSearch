@@ -55,6 +55,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
             Glide.with(context).load(photoList.get(position).getSrc().getMedium()).into(holder.image);
             holder.creatorName.setText(photoList.get(position).getPhotographer());
         Intent i = new Intent(context, ImagePreviewActivity.class);
+        i.putExtra("class","Adapter");
         i.putExtra("imageInfo",photoList.get(position));
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -67,7 +68,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
             if(myFavDatabase.getMyFavDao().isMyFavExist(photoList.get(position).getId())) {
                 holder.addToMyFav.setColorFilter(Color.RED);
                 holder.addToMyFav.setImageResource(R.drawable.heart_filled);
-                i.putExtra("isFav",true);
+                //i.putExtra("isFav",true);
             }else {
                 holder.addToMyFav.setImageResource(R.drawable.heart);
                 holder.addToMyFav.setColorFilter(Color.BLACK);
