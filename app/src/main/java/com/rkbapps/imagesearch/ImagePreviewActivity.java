@@ -2,16 +2,26 @@ package com.rkbapps.imagesearch;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.DownloadManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
@@ -20,10 +30,19 @@ import com.rkbapps.imagesearch.db.MyFav;
 import com.rkbapps.imagesearch.db.MyFavDatabase;
 import com.rkbapps.imagesearch.model.Photo;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 public class ImagePreviewActivity extends AppCompatActivity {
 
     private ImageView previewImage;
     private TextView txtAlt;
+
 
     ExtendedFloatingActionButton ebInfo, ebFav, ebDownload;
     @SuppressLint("MissingInflatedId")
@@ -78,6 +97,20 @@ public class ImagePreviewActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            ebDownload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String fileName;
+                    if(photo.getAlt().equals("")){
+                        fileName = System.currentTimeMillis()+"";
+                    }else{
+                        fileName = photo.getAlt();
+                    }
+                    downloadImage(fileName,photo.getSrc().getOriginal());
+                    Toast.makeText(ImagePreviewActivity.this, "Download successfully", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
 
@@ -113,8 +146,22 @@ public class ImagePreviewActivity extends AppCompatActivity {
                     }
                 }
             });
-        }
 
+
+            ebDownload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String fileName;
+                    if(myFav.getAlt().equals("")){
+                        fileName = System.currentTimeMillis()+"";
+                    }else{
+                        fileName = myFav.getAlt();
+                    }
+                    downloadImage(fileName, myFav.getOriginalImageLink());
+                    Toast.makeText(ImagePreviewActivity.this, "Download successfully", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
 
     }
@@ -145,24 +192,25 @@ public class ImagePreviewActivity extends AppCompatActivity {
         }
     }
 
-//    private void addToMyFav(ExtendedFloatingActionButton ebAdd , MyFavDatabase myFavDatabase,int imageId){
-//        ebAdd.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(myFavDatabase.getMyFavDao().isMyFavExist(imageId)) {
-//                    ebFav.setIconTint(ColorStateList.valueOf(Color.BLACK));
-//                    myFavDatabase.getMyFavDao().removeMyFav(imageId);
-//                    Toast.makeText(getApplicationContext(), "Removed from Favourite list", Toast.LENGTH_SHORT).show();
-//                }else {
-//                    MyFav mFav = new MyFav(photoList.get(position).getId(), photoList.get(position).getHeight(), photoList.get(position).getWidth(), photoList.get(position).getPhotographer(), photoList.get(position).getPhotographerId(), photoList.get(position).getSrc().getOriginal(), photoList.get(position).getSrc().getMedium(), photoList.get(position).getAlt());
-//                    myFavDatabase.getMyFavDao().addToMyFav(mFav);
-//                    holder.addToMyFav.setColorFilter(Color.RED);
-//                    holder.addToMyFav.setImageResource(R.drawable.heart_filled);
-//                    Toast.makeText(context, "Added to Favourite list", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//    }
+private void downloadImage(String fileName,String url){
+        try{
+            DownloadManager downloadManager =null;
+            downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+            Uri uri = Uri.parse(url);
+            DownloadManager.Request request = new DownloadManager.Request(uri);
 
+            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI)
+                    .setAllowedOverRoaming(true)
+                    .setTitle(fileName)
+                    .setMimeType("image/*")
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION)
+                    .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES,File.separator+"/Image Search/"+fileName+".jpeg");
+
+            downloadManager.enqueue(request);
+        }catch (Exception e){
+            Toast.makeText(this, "Something went wrong ! Download Failed", Toast.LENGTH_SHORT).show();
+        }
+
+}
 
 }
