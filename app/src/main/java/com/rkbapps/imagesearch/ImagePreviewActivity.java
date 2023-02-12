@@ -43,7 +43,6 @@ public class ImagePreviewActivity extends AppCompatActivity {
     private ImageView previewImage;
     private TextView txtAlt;
 
-
     ExtendedFloatingActionButton ebInfo, ebFav, ebDownload;
     @SuppressLint("MissingInflatedId")
     @Override
