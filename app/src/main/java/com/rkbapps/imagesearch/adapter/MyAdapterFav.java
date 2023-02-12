@@ -40,7 +40,7 @@ public class MyAdapterFav extends RecyclerView.Adapter<MyAdapterFav.MyAdapterVie
 
         Glide.with(context).load(myFavList.get(position).getMediumImageLink()).into(holder.image);
         holder.creatorName.setText(myFavList.get(position).getPhotographer());
-        
+        holder.addToMyFav.setVisibility(View.GONE);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class MyAdapterFav extends RecyclerView.Adapter<MyAdapterFav.MyAdapterVie
     }
 
     public class MyAdapterViewHolder extends RecyclerView.ViewHolder {
-        ImageView image;
+        ImageView image,addToMyFav;
         CircularImageView creatorImage;
         TextView creatorName;
         CardView cardView;
@@ -60,6 +60,7 @@ public class MyAdapterFav extends RecyclerView.Adapter<MyAdapterFav.MyAdapterVie
             creatorImage=itemView.findViewById(R.id.imgCreatorImage);
             creatorName=itemView.findViewById(R.id.txtCreatorName);
             cardView=itemView.findViewById(R.id.cardView);
+            addToMyFav=itemView.findViewById(R.id.addToMyFav);
         }
     }
 }

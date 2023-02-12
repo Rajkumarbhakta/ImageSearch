@@ -40,6 +40,7 @@ import com.rkbapps.imagesearch.ImagePreviewActivity;
 import com.rkbapps.imagesearch.R;
 import com.rkbapps.imagesearch.RecyclerTouchListener;
 import com.rkbapps.imagesearch.adapter.MyAdapter;
+import com.rkbapps.imagesearch.adapter.TopicAdapter;
 import com.rkbapps.imagesearch.model.ImageModelClass;
 import com.rkbapps.imagesearch.model.Photo;
 
@@ -51,15 +52,15 @@ public class SearchFragment extends Fragment {
     ImageView imgSearch;
     Button btnSearch;
     EditText txtSearchText;
-    ConstraintLayout searchView;
+    ConstraintLayout searchView,topicView;
     String strSearchText;
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView,recyclerViewTopic;
     private ImageModelClass img;
     private ProgressBar progressBar;
     private List<Photo> photoList = new ArrayList<>();
     private MyAdapter adapter ;
 
-    private int page;
+    private static int page;
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -74,9 +75,15 @@ public class SearchFragment extends Fragment {
         btnSearch=view.findViewById(R.id.buttonSearch);
         txtSearchText=view.findViewById(R.id.txtSearch);
         searchView=view.findViewById(R.id.searchLayout);
+        topicView=view.findViewById(R.id.topicLayout);
         searchView.setVisibility(View.GONE);
         recyclerView=view.findViewById(R.id.recyclerView2);
         progressBar=view.findViewById(R.id.progressBarSearch);
+        recyclerViewTopic=view.findViewById(R.id.recyclerViewTopic);
+
+        String[] topics ={"Peacock","Moon","Beautiful","Landscape","Animal","Building","Nature","Sunset","Beach","Travel","Forest","Flowers","Dog","Dark","Cat","Technology","House","Love"};
+
+        TopicAdapter topicAdapter = new TopicAdapter(topics);
 
         ExtendedFloatingActionButton ebSetting=view.findViewById(R.id.btnApplySetting2);
         LinearLayoutCompat liner = view.findViewById(R.id.linerLayout2);
@@ -87,10 +94,31 @@ public class SearchFragment extends Fragment {
         strSearchText="wallpaper";
         loadImages(strSearchText,""+page);
 
+        LinearLayoutManager lm = new LinearLayoutManager(getContext());
+        lm.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerViewTopic.setLayoutManager(lm);
+        recyclerViewTopic.setAdapter(topicAdapter);
+
+        //On any topic click
+        recyclerViewTopic.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerViewTopic, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                page = 1;
+                strSearchText=""+topics[position];
+                loadImages(strSearchText,""+page); 
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+            //noting
+            }
+        }));
+
+        //search button
         imgSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imgSearch.setVisibility(View.GONE);
+               topicView.setVisibility(View.GONE);
                 searchView.setVisibility(View.VISIBLE);
             }
         });
@@ -99,7 +127,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 strSearchText=txtSearchText.getText().toString().trim();
-                imgSearch.setVisibility(View.VISIBLE);
+                topicView.setVisibility(View.VISIBLE);
                 searchView.setVisibility(View.GONE);
                 if(strSearchText.equals("")){
                     Toast.makeText(getContext(), "nothing", Toast.LENGTH_SHORT).show();
@@ -164,13 +192,11 @@ public class SearchFragment extends Fragment {
 //            }
 //        }));
 
-
-
         return view;
     }
 
 
-    private void loadImages(String searchTxt,String page){
+    private void loadImages(String searchTxt, String page){
         progressBar.setVisibility(View.VISIBLE);
         photoList.clear();
         String url = "https://api.pexels.com/v1/search/?page="+page+"&per_page=30&query="+searchTxt;
@@ -196,4 +222,5 @@ public class SearchFragment extends Fragment {
         queue.add(stringRequest);
         progressBar.setVisibility(View.INVISIBLE);
     }
+
 }

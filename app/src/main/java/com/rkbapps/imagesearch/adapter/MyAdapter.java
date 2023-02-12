@@ -97,14 +97,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-
         ImageView  image,addToMyFav;
         CircularImageView creatorImage;
         TextView creatorName;
         CardView cardView;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-
             image=itemView.findViewById(R.id.image);
             creatorImage=itemView.findViewById(R.id.imgCreatorImage);
             creatorName=itemView.findViewById(R.id.txtCreatorName);
