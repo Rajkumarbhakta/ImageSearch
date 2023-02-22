@@ -4,25 +4,18 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
@@ -34,15 +27,14 @@ import com.rkbapps.imagesearch.model.Photo;
 import java.io.File;
 
 
-
 public class ImagePreviewActivity extends AppCompatActivity {
 
     private ImageView previewImage;
     private TextView txtAlt;
 
 
-
     ExtendedFloatingActionButton ebInfo, ebFav, ebDownload;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +47,7 @@ public class ImagePreviewActivity extends AppCompatActivity {
         ebFav = findViewById(R.id.ebAddToFav);
         ebDownload = findViewById(R.id.ebDownloadImage);
 
-        MyFavDatabase myFavDatabase = Room.databaseBuilder(getApplicationContext(),MyFavDatabase.class,"myFavDb")
+        MyFavDatabase myFavDatabase = Room.databaseBuilder(getApplicationContext(), MyFavDatabase.class, "myFavDb")
                 .allowMainThreadQueries()
                 .build();
 
@@ -68,26 +60,26 @@ public class ImagePreviewActivity extends AppCompatActivity {
             else
                 txtAlt.setText("");
             txtAlt.setTextColor(Color.parseColor(photo.getAvgColor()));
-           // boolean isFav = getIntent().getBooleanExtra("isFav", false);
+            // boolean isFav = getIntent().getBooleanExtra("isFav", false);
 
 
-                isItFav(photo.getId(),myFavDatabase);
+            isItFav(photo.getId(), myFavDatabase);
 
             ebInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showImageDetails(photo.getHeight()+"",""+photo.getWidth(),""+photo.getPhotographer(),""+photo.getPhotographerId(),""+photo.getAlt());
+                    showImageDetails(photo.getHeight() + "", "" + photo.getWidth(), "" + photo.getPhotographer(), "" + photo.getPhotographerId(), "" + photo.getAlt());
                 }
             });
 
             ebFav.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(myFavDatabase.getMyFavDao().isMyFavExist(photo.getId())) {
+                    if (myFavDatabase.getMyFavDao().isMyFavExist(photo.getId())) {
                         ebFav.setIconTint(ColorStateList.valueOf(Color.BLACK));
                         myFavDatabase.getMyFavDao().removeMyFav(photo.getId());
                         Toast.makeText(getApplicationContext(), "Removed from Favourite list", Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         MyFav mFav = new MyFav(photo.getId(), photo.getHeight(), photo.getWidth(), photo.getPhotographer(), photo.getPhotographerId(), photo.getSrc().getOriginal(), photo.getSrc().getMedium(), photo.getAlt());
                         myFavDatabase.getMyFavDao().addToMyFav(mFav);
                         ebFav.setIconTint(ColorStateList.valueOf(Color.RED));
@@ -100,12 +92,12 @@ public class ImagePreviewActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String fileName;
-                    if(photo.getAlt().equals("")){
-                        fileName = System.currentTimeMillis()+"";
-                    }else{
+                    if (photo.getAlt().equals("")) {
+                        fileName = System.currentTimeMillis() + "";
+                    } else {
                         fileName = photo.getAlt();
                     }
-                    downloadImage(fileName,photo.getSrc().getOriginal());
+                    downloadImage(fileName, photo.getSrc().getOriginal());
                     Toast.makeText(ImagePreviewActivity.this, "Download successfully", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -121,22 +113,22 @@ public class ImagePreviewActivity extends AppCompatActivity {
                 txtAlt.setText("");
             txtAlt.setTextColor(Color.parseColor("#ff758f"));
 
-            isItFav(myFav.getImageId(),myFavDatabase);
+            isItFav(myFav.getImageId(), myFavDatabase);
             ebInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showImageDetails(""+myFav.getHeight(),""+myFav.getWidth(),""+myFav.getPhotographer(),""+myFav.getPhotographerId(),""+myFav.getAlt());
+                    showImageDetails("" + myFav.getHeight(), "" + myFav.getWidth(), "" + myFav.getPhotographer(), "" + myFav.getPhotographerId(), "" + myFav.getAlt());
                 }
             });
 
             ebFav.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(myFavDatabase.getMyFavDao().isMyFavExist(myFav.getImageId())) {
+                    if (myFavDatabase.getMyFavDao().isMyFavExist(myFav.getImageId())) {
                         ebFav.setIconTint(ColorStateList.valueOf(Color.BLACK));
                         myFavDatabase.getMyFavDao().removeMyFav(myFav.getImageId());
                         Toast.makeText(getApplicationContext(), "Removed from Favourite list", Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         MyFav mFav = myFav;
                         myFavDatabase.getMyFavDao().addToMyFav(mFav);
                         ebFav.setIconTint(ColorStateList.valueOf(Color.RED));
@@ -150,9 +142,9 @@ public class ImagePreviewActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String fileName;
-                    if(myFav.getAlt().equals("")){
-                        fileName = System.currentTimeMillis()+"";
-                    }else{
+                    if (myFav.getAlt().equals("")) {
+                        fileName = System.currentTimeMillis() + "";
+                    } else {
                         fileName = myFav.getAlt();
                     }
                     downloadImage(fileName, myFav.getOriginalImageLink());
@@ -183,17 +175,17 @@ public class ImagePreviewActivity extends AppCompatActivity {
         d.show();
     }
 
-    private void isItFav(int imageId,MyFavDatabase myFavDatabase){
-        if(myFavDatabase.getMyFavDao().isMyFavExist(imageId)) {
+    private void isItFav(int imageId, MyFavDatabase myFavDatabase) {
+        if (myFavDatabase.getMyFavDao().isMyFavExist(imageId)) {
             ebFav.setIconTint(ColorStateList.valueOf(Color.RED));
-        }else {
+        } else {
             ebFav.setIconTint(ColorStateList.valueOf(Color.BLACK));
         }
     }
 
-private void downloadImage(String fileName,String url){
-        try{
-            DownloadManager downloadManager =null;
+    private void downloadImage(String fileName, String url) {
+        try {
+            DownloadManager downloadManager = null;
             downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             Uri uri = Uri.parse(url);
             DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -203,14 +195,14 @@ private void downloadImage(String fileName,String url){
                     .setTitle(fileName)
                     .setMimeType("image/*")
                     .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION)
-                    .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES,File.separator+"/Image Search/"+fileName+".jpeg");
+                    .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, File.separator + "/Image Search/" + fileName + ".jpeg");
 
             downloadManager.enqueue(request);
-        }catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(this, "Something went wrong ! Download Failed", Toast.LENGTH_SHORT).show();
         }
 
-}
+    }
 
 
 }

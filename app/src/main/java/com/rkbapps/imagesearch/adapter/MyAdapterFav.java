@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyAdapterFav extends RecyclerView.Adapter<MyAdapterFav.MyAdapterViewHolder> {
-    
+
     Context context;
     List<MyFav> myFavList = new ArrayList<>();
 
@@ -32,7 +32,7 @@ public class MyAdapterFav extends RecyclerView.Adapter<MyAdapterFav.MyAdapterVie
     @NonNull
     @Override
     public MyAdapterFav.MyAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item,parent,false));
+        return new MyAdapterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item, parent, false));
     }
 
     @Override
@@ -49,18 +49,19 @@ public class MyAdapterFav extends RecyclerView.Adapter<MyAdapterFav.MyAdapterVie
     }
 
     public class MyAdapterViewHolder extends RecyclerView.ViewHolder {
-        ImageView image,addToMyFav;
+        ImageView image, addToMyFav;
         CircularImageView creatorImage;
         TextView creatorName;
         CardView cardView;
+
         public MyAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            image=itemView.findViewById(R.id.image);
-            creatorImage=itemView.findViewById(R.id.imgCreatorImage);
-            creatorName=itemView.findViewById(R.id.txtCreatorName);
-            cardView=itemView.findViewById(R.id.cardView);
-            addToMyFav=itemView.findViewById(R.id.addToMyFav);
+            image = itemView.findViewById(R.id.image);
+            creatorImage = itemView.findViewById(R.id.imgCreatorImage);
+            creatorName = itemView.findViewById(R.id.txtCreatorName);
+            cardView = itemView.findViewById(R.id.cardView);
+            addToMyFav = itemView.findViewById(R.id.addToMyFav);
         }
     }
 }

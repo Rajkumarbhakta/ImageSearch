@@ -1,20 +1,18 @@
 package com.rkbapps.imagesearch.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -26,10 +24,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rkbapps.imagesearch.ImagePreviewActivity;
-import com.rkbapps.imagesearch.MainActivity;
 import com.rkbapps.imagesearch.R;
-import com.rkbapps.imagesearch.RecyclerTouchListener;
 import com.rkbapps.imagesearch.adapter.MyAdapter;
 import com.rkbapps.imagesearch.model.ImageModelClass;
 import com.rkbapps.imagesearch.model.Photo;
@@ -47,7 +42,8 @@ public class HomeFragment extends Fragment {
     private ProgressBar progressBar;
     private List<Photo> photoList = new ArrayList<>();
     private MyAdapter adapter;
-    private int page,perPage;
+    private int page, perPage;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -57,19 +53,19 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_home, container, false);
-        recyclerView=view.findViewById(R.id.recyclerView);
-        progressBar=view.findViewById(R.id.progressBar);
-        ExtendedFloatingActionButton ebSetting=view.findViewById(R.id.btnApplySetting);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        progressBar = view.findViewById(R.id.progressBar);
+        ExtendedFloatingActionButton ebSetting = view.findViewById(R.id.btnApplySetting);
         LinearLayoutCompat liner = view.findViewById(R.id.linerLayout);
         Button previous = view.findViewById(R.id.btnPreviousHome);
         Button next = view.findViewById(R.id.btnNextHome);
         liner.setVisibility(View.GONE);
 
-        page=1;
-        perPage=30;
+        page = 1;
+        perPage = 30;
 
-        loadImages(""+page,""+perPage);
+        loadImages("" + page, "" + perPage);
 
         ebSetting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,12 +78,12 @@ public class HomeFragment extends Fragment {
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(page>1){
-                    page --;
-                    loadImages(""+page,""+perPage);
+                if (page > 1) {
+                    page--;
+                    loadImages("" + page, "" + perPage);
                     liner.setVisibility(View.GONE);
                     ebSetting.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     Toast.makeText(getContext(), "No previous page available", Toast.LENGTH_SHORT).show();
                     liner.setVisibility(View.GONE);
                     ebSetting.setVisibility(View.VISIBLE);
@@ -98,12 +94,12 @@ public class HomeFragment extends Fragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(img.getNextPage() != null){
+                if (img.getNextPage() != null) {
                     page++;
-                    loadImages(""+page,""+perPage);
+                    loadImages("" + page, "" + perPage);
                     liner.setVisibility(View.GONE);
                     ebSetting.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     Toast.makeText(getContext(), "No more result available", Toast.LENGTH_SHORT).show();
                     liner.setVisibility(View.GONE);
                     ebSetting.setVisibility(View.VISIBLE);
@@ -126,19 +122,19 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private void loadImages(String page,String perPage){
+    private void loadImages(String page, String perPage) {
         progressBar.setVisibility(View.VISIBLE);
         photoList.clear();
-        String url = "https://api.pexels.com/v1/curated?page="+page+"&per_page="+perPage;
+        String url = "https://api.pexels.com/v1/curated?page=" + page + "&per_page=" + perPage;
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = new Gson();
-                img= gson.fromJson(response,ImageModelClass.class);
-                photoList=img.getPhotos();
-                adapter = new MyAdapter(getContext(),photoList);
+                img = gson.fromJson(response, ImageModelClass.class);
+                photoList = img.getPhotos();
+                adapter = new MyAdapter(getContext(), photoList);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -146,13 +142,13 @@ public class HomeFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(),error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization",KEY);
+                headers.put("Authorization", KEY);
                 return headers;
             }
         };

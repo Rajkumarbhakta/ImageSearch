@@ -11,15 +11,15 @@
         android:id="@+id/txtAlt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="10dp"
+        android:elevation="5dp"
         android:text="aboutImage"
         android:textAlignment="center"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:textColor="#ac46a1"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#ac46a1"
-        android:elevation="5dp"
-        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,11 +28,11 @@
         android:id="@+id/imgPreviewImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:zoomage_zoomable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:zoomage_zoomable="true" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/ebImageInfo"
