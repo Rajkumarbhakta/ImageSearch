@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -34,11 +35,13 @@ import com.rkbapps.imagesearch.model.ImageModelClass;
 import com.rkbapps.imagesearch.model.Photo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
-    private final String KEY = "x9Yf1QT8KXSpwH4ILI0smrHAIGY7BwFarViZrYM8jxlY2vABSWIOyDX5";
+    public static final String KEY = "x9Yf1QT8KXSpwH4ILI0smrHAIGY7BwFarViZrYM8jxlY2vABSWIOyDX5";
     private RecyclerView recyclerView;
     private ImageModelClass img;
     private ProgressBar progressBar;
@@ -145,7 +148,14 @@ public class HomeFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), ""+error, Toast.LENGTH_SHORT).show();
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization",KEY);
+                return headers;
+            }
+        };
         queue.add(stringRequest);
         progressBar.setVisibility(View.INVISIBLE);
     }

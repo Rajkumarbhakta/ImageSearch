@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,18 +31,16 @@ import com.rkbapps.imagesearch.db.MyFav;
 import com.rkbapps.imagesearch.db.MyFavDatabase;
 import com.rkbapps.imagesearch.model.Photo;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+
+
 
 public class ImagePreviewActivity extends AppCompatActivity {
 
     private ImageView previewImage;
     private TextView txtAlt;
+
+
 
     ExtendedFloatingActionButton ebInfo, ebFav, ebDownload;
     @SuppressLint("MissingInflatedId")
@@ -165,6 +164,7 @@ public class ImagePreviewActivity extends AppCompatActivity {
 
     }
 
+
     private void showImageDetails(String height, String width, String photographer, String photographerId, String alt) {
         Dialog d = new Dialog(ImagePreviewActivity.this);
         d.setContentView(R.layout.image_info_dialog);
@@ -211,5 +211,6 @@ private void downloadImage(String fileName,String url){
         }
 
 }
+
 
 }
