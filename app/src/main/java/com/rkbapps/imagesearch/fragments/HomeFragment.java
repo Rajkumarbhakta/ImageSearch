@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,6 +44,12 @@ public class HomeFragment extends Fragment {
     private List<Photo> photoList = new ArrayList<>();
     private MyAdapter adapter;
     private int page, perPage;
+    private boolean isLoading = false;
+
+    Map<String, Object> totalPages = new HashMap<>();
+
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -65,7 +72,39 @@ public class HomeFragment extends Fragment {
         page = 1;
         perPage = 30;
 
+        adapter = new MyAdapter(getContext(), photoList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
         loadImages("" + page, "" + perPage);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == photoList.size() - 1) {
+                        //bottom of list!
+                        if (img.getNextPage() != null) {
+                            page++;
+                            loadImages("" + page, "" + perPage);
+                        } else {
+                            Toast.makeText(getContext(), "No more result available", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+        });
+
+        ebSetting.setVisibility(View.GONE);
 
         ebSetting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,25 +145,12 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
-//        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
-//            @Override
-//            public void onClick(View view, int position) {
-//                Intent i = new Intent(getContext(), ImagePreviewActivity.class);
-//                i.putExtra("link",photoList.get(position).getSrc().getOriginal());
-//                startActivity(i);
-//            }
-//
-//            @Override
-//            public void onLongClick(View view, int position) {
-//
-//            }
-//        }));
         return view;
     }
 
     private void loadImages(String page, String perPage) {
         progressBar.setVisibility(View.VISIBLE);
-        photoList.clear();
+        isLoading = true;
         String url = "https://api.pexels.com/v1/curated?page=" + page + "&per_page=" + perPage;
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -133,15 +159,15 @@ public class HomeFragment extends Fragment {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = new Gson();
                 img = gson.fromJson(response, ImageModelClass.class);
-                photoList = img.getPhotos();
-                adapter = new MyAdapter(getContext(), photoList);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                recyclerView.setAdapter(adapter);
+                photoList.addAll(img.getPhotos());
                 adapter.notifyDataSetChanged();
+                isLoading = false;
             }
+
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                isLoading = false;
                 Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -155,5 +181,35 @@ public class HomeFragment extends Fragment {
         queue.add(stringRequest);
         progressBar.setVisibility(View.INVISIBLE);
     }
+
+//    private void lodeMore(RecyclerView recyclerView){
+//
+//        LinearLayoutManager lm = (LinearLayoutManager)recyclerView.getLayoutManager();
+//
+//        //lm.findFirstVisibleItemPosition();
+//
+//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                if (dy > 0) { //check for scroll down
+//                    visibleItemCount = lm.getChildCount();
+//                    totalItemCount = lm.getItemCount();
+//                    pastVisiblesItems = lm.findFirstVisibleItemPosition();
+//
+//                    if (mLoading) {
+//                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+//                            mLoading = false;
+//                            Log.v("...", "Last Item Wow !");
+//                            if(img.getNextPage()!=null){
+//                                loadImages(img.getNextPage(),""+perPage );
+//                            }
+//                            mLoading = true;
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//    }
+
 
 }

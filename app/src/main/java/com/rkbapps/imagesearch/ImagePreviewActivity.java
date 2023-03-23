@@ -98,7 +98,7 @@ public class ImagePreviewActivity extends AppCompatActivity {
                         fileName = photo.getAlt();
                     }
                     downloadImage(fileName, photo.getSrc().getOriginal());
-                    Toast.makeText(ImagePreviewActivity.this, "Download successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ImagePreviewActivity.this, "Download started", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -148,7 +148,7 @@ public class ImagePreviewActivity extends AppCompatActivity {
                         fileName = myFav.getAlt();
                     }
                     downloadImage(fileName, myFav.getOriginalImageLink());
-                    Toast.makeText(ImagePreviewActivity.this, "Download successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ImagePreviewActivity.this, "Download started", Toast.LENGTH_SHORT).show();
                 }
             });
         }

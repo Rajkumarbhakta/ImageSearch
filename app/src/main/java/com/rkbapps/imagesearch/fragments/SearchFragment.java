@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -54,6 +55,8 @@ public class SearchFragment extends Fragment {
 
     private static int page;
 
+    private boolean isLoading = false;
+
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -85,12 +88,20 @@ public class SearchFragment extends Fragment {
         liner.setVisibility(View.GONE);
         page = 1;
         strSearchText = "wallpaper";
-        loadImages(strSearchText, "" + page);
+
 
         LinearLayoutManager lm = new LinearLayoutManager(getContext());
         lm.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerViewTopic.setLayoutManager(lm);
         recyclerViewTopic.setAdapter(topicAdapter);
+
+        adapter = new MyAdapter(getContext(), photoList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+
+        loadImages(strSearchText, "" + page);
+
 
         //On any topic click
         recyclerViewTopic.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerViewTopic, new RecyclerTouchListener.ClickListener() {
@@ -130,6 +141,29 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == photoList.size() - 1) {
+                        //bottom of list!
+                        if (img.getNextPage() != null) {
+                            page++;
+                            loadImages(strSearchText, "" + page);
+                        } else {
+                            Toast.makeText(getContext(), "No more result available", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+        });
+
+        ebSetting.setVisibility(View.GONE);
 
         ebSetting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,7 +225,7 @@ public class SearchFragment extends Fragment {
 
     private void loadImages(String searchTxt, String page) {
         progressBar.setVisibility(View.VISIBLE);
-        photoList.clear();
+        isLoading= true;
         String url = "https://api.pexels.com/v1/search/?page=" + page + "&per_page=30&query=" + searchTxt;
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -200,15 +234,14 @@ public class SearchFragment extends Fragment {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = new Gson();
                 img = gson.fromJson(response, ImageModelClass.class);
-                photoList = img.getPhotos();
-                adapter = new MyAdapter(getContext(), photoList);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                recyclerView.setAdapter(adapter);
+                photoList.addAll(img.getPhotos());
                 adapter.notifyDataSetChanged();
+                isLoading = false;
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                isLoading = false;
                 Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }) {
