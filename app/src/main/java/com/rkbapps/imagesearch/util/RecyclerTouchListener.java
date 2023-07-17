@@ -1,4 +1,4 @@
-package com.rkbapps.imagesearch;
+package com.rkbapps.imagesearch.util;
 
 import android.content.Context;
 import android.view.GestureDetector;

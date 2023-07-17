@@ -68,9 +68,10 @@ public class HomeFragment extends Fragment {
 
                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-                if (!isLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == photoList.size() - 1) {
-                        //bottom of list!
+
+                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == photoList.size() - 1) {
+                    //bottom of list!
+                    if (!isLoading) {
                         if (img.getNextPage() != null) {
                             page++;
                             loadImages(page, perPage);
@@ -78,6 +79,7 @@ public class HomeFragment extends Fragment {
                             Toast.makeText(getContext(), "No more result available", Toast.LENGTH_SHORT).show();
                         }
                     }
+
                 }
             }
         });

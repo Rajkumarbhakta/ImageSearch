@@ -14,7 +14,7 @@ import androidx.room.Room;
 
 import com.rkbapps.imagesearch.ImagePreviewActivity;
 import com.rkbapps.imagesearch.R;
-import com.rkbapps.imagesearch.RecyclerTouchListener;
+import com.rkbapps.imagesearch.util.RecyclerTouchListener;
 import com.rkbapps.imagesearch.adapter.MyAdapterFav;
 import com.rkbapps.imagesearch.db.MyFav;
 import com.rkbapps.imagesearch.db.MyFavDatabase;

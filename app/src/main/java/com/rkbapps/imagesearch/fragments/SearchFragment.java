@@ -15,26 +15,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 import com.rkbapps.imagesearch.R;
 import com.rkbapps.imagesearch.adapter.MyAdapter;
 import com.rkbapps.imagesearch.adapter.TopicAdapter;
 import com.rkbapps.imagesearch.databinding.FragmentSearchBinding;
 import com.rkbapps.imagesearch.model.ImageModelClass;
 import com.rkbapps.imagesearch.model.Photo;
-import com.rkbapps.imagesearch.util.ApiData;
+import com.rkbapps.imagesearch.services.ApiInstance;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 
 public class SearchFragment extends Fragment {
@@ -71,7 +64,7 @@ public class SearchFragment extends Fragment {
         binding.recyclerSearchResult.setAdapter(adapter);
 
         strSearchText = "wallpaper";
-        loadImages("wallpaper", page);
+        loadImages(strSearchText, page);
 
         binding.searchView.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -79,21 +72,22 @@ public class SearchFragment extends Fragment {
                 binding.searchBar.setText(binding.searchView.getText());
                 strSearchText = binding.searchView.getText().toString();
                 page = 1;
+                photoList.clear();
                 loadImages(strSearchText, page);
                 binding.searchView.hide();
                 return false;
             }
         });
 
-
         binding.recyclerSearchResult.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (!isLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == photoList.size() - 1) {
-                        //bottom of list!
+
+                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == photoList.size() - 1) {
+                    //bottom of list!
+                    if (!isLoading) {
                         if (img.getNextPage() != null) {
                             page++;
                             loadImages(strSearchText, page);
@@ -111,32 +105,26 @@ public class SearchFragment extends Fragment {
 
     private void loadImages(String query, Integer page) {
         isLoading = true;
-        String url = ApiData.getUrl(query, page);
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+        ApiInstance.getApi().getSearchResult(query, page, 10).enqueue(new Callback<ImageModelClass>() {
             @Override
-            public void onResponse(String response) {
-                Gson gson = new Gson();
-                img = gson.fromJson(response, ImageModelClass.class);
-                photoList.addAll(img.getPhotos());
-                adapter.notifyDataSetChanged();
-                isLoading = false;
+            public void onResponse(Call<ImageModelClass> call, retrofit2.Response<ImageModelClass> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        img = response.body();
+                        photoList.addAll(response.body().getPhotos());
+                        adapter.notifyDataSetChanged();
+                        isLoading = false;
+                    }
+                }
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-                Toast.makeText(getContext(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<ImageModelClass> call, Throwable t) {
+                Toast.makeText(requireContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", ApiData.API_KEY);
-                return headers;
-            }
-        };
-        queue.add(stringRequest);
+        });
+
+
     }
 
 }
