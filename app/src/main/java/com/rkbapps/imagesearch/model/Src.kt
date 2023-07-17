@@ -1,126 +1,32 @@
-package com.rkbapps.imagesearch.model;
+package com.rkbapps.imagesearch.model
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-import java.io.Serializable;
-
-public class Src implements Serializable {
-
+data class Src(
     @SerializedName("original")
     @Expose
-    private String original;
+    val original: String,
     @SerializedName("large2x")
     @Expose
-    private String large2x;
+    val large2x: String,
     @SerializedName("large")
     @Expose
-    private String large;
+    val large: String,
     @SerializedName("medium")
     @Expose
-    private String medium;
+    val medium: String,
     @SerializedName("small")
     @Expose
-    private String small;
+    val small: String,
     @SerializedName("portrait")
     @Expose
-    private String portrait;
+    val portrait: String,
     @SerializedName("landscape")
     @Expose
-    private String landscape;
+    val landscape: String,
     @SerializedName("tiny")
     @Expose
-    private String tiny;
-
-    public Src() {
-    }
-
-    public Src(String original, String large2x, String large, String medium, String small, String portrait, String landscape, String tiny) {
-        this.original = original;
-        this.large2x = large2x;
-        this.large = large;
-        this.medium = medium;
-        this.small = small;
-        this.portrait = portrait;
-        this.landscape = landscape;
-        this.tiny = tiny;
-    }
-
-    public String getOriginal() {
-        return original;
-    }
-
-    public void setOriginal(String original) {
-        this.original = original;
-    }
-
-    public String getLarge2x() {
-        return large2x;
-    }
-
-    public void setLarge2x(String large2x) {
-        this.large2x = large2x;
-    }
-
-    public String getLarge() {
-        return large;
-    }
-
-    public void setLarge(String large) {
-        this.large = large;
-    }
-
-    public String getMedium() {
-        return medium;
-    }
-
-    public void setMedium(String medium) {
-        this.medium = medium;
-    }
-
-    public String getSmall() {
-        return small;
-    }
-
-    public void setSmall(String small) {
-        this.small = small;
-    }
-
-    public String getPortrait() {
-        return portrait;
-    }
-
-    public void setPortrait(String portrait) {
-        this.portrait = portrait;
-    }
-
-    public String getLandscape() {
-        return landscape;
-    }
-
-    public void setLandscape(String landscape) {
-        this.landscape = landscape;
-    }
-
-    public String getTiny() {
-        return tiny;
-    }
-
-    public void setTiny(String tiny) {
-        this.tiny = tiny;
-    }
-
-    @Override
-    public String toString() {
-        return "Src{" +
-                "original='" + original + '\'' +
-                ", large2x='" + large2x + '\'' +
-                ", large='" + large + '\'' +
-                ", medium='" + medium + '\'' +
-                ", small='" + small + '\'' +
-                ", portrait='" + portrait + '\'' +
-                ", landscape='" + landscape + '\'' +
-                ", tiny='" + tiny + '\'' +
-                '}';
-    }
-}
+    val tiny: String
+) : Serializable
