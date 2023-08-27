@@ -4,6 +4,10 @@ plugins {
     id 'kotlin-kapt'
 }
 
+def apikeyPropertiesFile = rootProject.file("apikeys.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 android {
     namespace 'com.rkbapps.imagesearch'
     compileSdk 34
@@ -14,6 +18,8 @@ android {
         targetSdk 34
         versionCode 2
         versionName "1.1"
+
+        buildConfigField("String", "API_KEY", apikeyProperties['API_KEY'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,6 +34,7 @@ android {
 
     buildFeatures {
         dataBinding true
+        buildConfig true
     }
 
     compileOptions {
@@ -75,5 +82,21 @@ dependencies {
     //Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //Coroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
+
+    //Navigation component
+    //java
+    implementation 'androidx.navigation:navigation-fragment:2.6.0'
+    implementation 'androidx.navigation:navigation-ui:2.6.0'
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:2.6.0"
+    implementation "androidx.navigation:navigation-ui-ktx:2.6.0"
+
+    //Paging
+    def paging_version = "3.1.1"
+    implementation "androidx.paging:paging-runtime:$paging_version"
 
 }
